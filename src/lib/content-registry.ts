@@ -11,6 +11,9 @@ export type ContentDef = {
 };
 
 export const CONTENT: ContentDef[] = [
+  /* ------------------------------------------------------------ Brand */
+  { key: "healing.brand.logo", site: "healing", section: "Brand", label: "Logo (PNG/SVG, transparent)", kind: "image", en: "" },
+  { key: "shop.brand.logo", site: "shop", section: "Brand", label: "Logo (PNG/SVG, transparent)", kind: "image", en: "" },
   /* ------------------------------------------------------------ Healing: hero */
   { key: "healing.hero.eyebrow", site: "healing", section: "Hero", label: "Eyebrow line", kind: "text",
     en: "Clinical Hypnotherapy · Chakra Healing · Energy Alignment",

@@ -3,12 +3,12 @@ import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { coupons, products } from "@/db/schema";
 import { getSetting } from "./settings";
+import { unitPriceOf } from "./format";
 
 export type CartLine = { productId: number; qty: number };
 export type PaymentMethod = "razorpay" | "cod" | "whatsapp";
 
-export const unitPrice = (p: { mrp: number; salePrice: number | null }) =>
-  p.salePrice != null && Number(p.salePrice) > 0 && Number(p.salePrice) < Number(p.mrp) ? Number(p.salePrice) : Number(p.mrp);
+export { unitPriceOf as unitPrice } from "./format";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -52,7 +52,7 @@ export async function priceCart(lines: CartLine[], couponCode?: string | null, m
         problems.push(p.stockQty ? `Only ${p.stockQty} × ${p.nameEn} in stock` : `${p.nameEn} is out of stock`);
         qty = p.stockQty;
       }
-      const price = unitPrice(p);
+      const price = unitPriceOf(p);
       return { product: p, qty, unitPrice: price, lineTotal: round2(price * qty) };
     })
     .filter((i) => i.qty > 0);

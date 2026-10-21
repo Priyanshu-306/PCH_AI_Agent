@@ -63,3 +63,7 @@ export function makeRef(prefix: string) {
   const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
   return `${prefix}-${day}-${rand}`;
 }
+
+/** Selling price: the sale price when it is a real discount, otherwise MRP. */
+export const unitPriceOf = (p: { mrp: number | string; salePrice: number | string | null }) =>
+  p.salePrice != null && Number(p.salePrice) > 0 && Number(p.salePrice) < Number(p.mrp) ? Number(p.salePrice) : Number(p.mrp);
