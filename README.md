@@ -4,9 +4,9 @@ Two immersive websites and one shared Admin Panel, built as a single Next.js app
 
 | Site | Local URL | Production domain |
 |---|---|---|
-| **Pure Conscious Healing**: healing services, booking, courses | http://localhost:3000 | pureconscioushealing.com |
-| **Pure Crystal Hub**: crystal e-commerce | http://shop.localhost:3000 | purecrystalhub.com |
-| **Admin Panel**: manages both | http://localhost:3000/admin | `/admin` on either domain |
+| **Pure Conscious Healing**: healing services, booking, courses | http://localhost:3005 | pureconscioushealing.com |
+| **Pure Crystal Hub**: crystal e-commerce | http://shop.localhost:3005 | purecrystalhub.com |
+| **Admin Panel**: manages both | http://localhost:3005/admin | `/admin` on either domain |
 
 All content is placeholder until the client's photos, videos, prices and product sheet arrive. Placeholder content is labelled as a sample wherever it appears.
 
@@ -26,6 +26,18 @@ npm run db:seed                 # placeholder catalogue, services, content, sett
 npm run db:seed:demo            # optional: demo orders/bookings/visits so dashboards have data
 npm run dev
 ```
+
+**No PostgreSQL installed?** Start one with Docker instead of the `CREATE USER` step above:
+
+```bash
+docker run --name pch-db -e POSTGRES_USER=pch -e POSTGRES_PASSWORD=pch -e POSTGRES_DB=pch -p 5432:5432 -d postgres:16
+```
+
+If port 5432 is already in use, use `-p 5433:5432` and change `DATABASE_URL` in `.env` to `…@localhost:5433/pch`.
+
+**Port:** the site runs on **3005**, so it doesn't clash with other apps on 3000. To use another port, for example 4000:
+1. In `.env`, set `NEXT_PUBLIC_HEALING_URL=http://localhost:4000` and `NEXT_PUBLIC_SHOP_URL=http://shop.localhost:4000`.
+2. Run `npx next dev -p 4000`.
 
 **Admin login:** `owner@pch.local` / `ChangeMe@123`. Change it in **Admin › Staff & roles**. A demo `shop@pch.local` account (Shop Manager role, same password) shows how roles restrict access.
 

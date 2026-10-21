@@ -13,7 +13,7 @@ export function siteForHost(hostHeader: string | null): Site {
   return "healing";
 }
 
-export const HEALING_URL = process.env.NEXT_PUBLIC_HEALING_URL ?? "http://localhost:3000";
-export const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? "http://shop.localhost:3000";
+export const HEALING_URL = process.env.NEXT_PUBLIC_HEALING_URL ?? "http://localhost:3005";
+export const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? "http://shop.localhost:3005";
 
 export const siteUrl = (site: Site, path = "/") => `${site === "shop" ? SHOP_URL : HEALING_URL}${path}`;
