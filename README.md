@@ -1,5 +1,7 @@
 # Pure Conscious Healing · Pure Crystal Hub
 
+> **New here? Setting it up on your own PC → [docs/02-SETUP-ON-YOUR-PC.md](docs/02-SETUP-ON-YOUR-PC.md).** Project memory for Claude: [CLAUDE.md](CLAUDE.md).
+
 Two immersive websites and one shared Admin Panel, built as a single Next.js application:
 
 | Site | Local URL | Production domain |
