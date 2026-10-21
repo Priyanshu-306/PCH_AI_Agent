@@ -26,6 +26,8 @@ export default function CrystalArt({ crystals, category, className = "", dark = 
                 : cat.includes("tower") || cat.includes("point") || cat.includes("angel")
                   ? "point"
                   : "cluster";
+  // Round computed coordinates so server and client render identical markup.
+  const r2 = (n: number) => Math.round(n * 100) / 100;
   const chakra = ["#d94040", "#f08a3c", "#f2c53d", "#5fbf7a", "#46a8e0", "#5a5fd6", "#b07ae0"];
 
   const point = (x: number, y: number, w: number, h: number, rot = 0, k = 0) => (
@@ -43,8 +45,8 @@ export default function CrystalArt({ crystals, category, className = "", dark = 
       const fill = rainbow ? chakra[i % 7] : undefined;
       return (
         <g key={i}>
-          <circle cx={cx + Math.cos(a) * r} cy={cy + Math.sin(a) * r * 0.82} r={br} fill={fill ?? `url(#${id}r)`} />
-          <circle cx={cx + Math.cos(a) * r - br * 0.35} cy={cy + Math.sin(a) * r * 0.82 - br * 0.35} r={br * 0.28} fill="#fff" opacity={0.6} />
+          <circle cx={r2(cx + Math.cos(a) * r)} cy={r2(cy + Math.sin(a) * r * 0.82)} r={br} fill={fill ?? `url(#${id}r)`} />
+          <circle cx={r2(cx + Math.cos(a) * r - br * 0.35)} cy={r2(cy + Math.sin(a) * r * 0.82 - br * 0.35)} r={r2(br * 0.28)} fill="#fff" opacity={0.6} />
         </g>
       );
     });
@@ -125,7 +127,7 @@ export default function CrystalArt({ crystals, category, className = "", dark = 
           {Array.from({ length: 46 }, (_, i) => {
             const a = i * 2.4;
             const r = 30 + (i % 9) * 10;
-            return <circle key={i} cx={200 + Math.cos(a) * r * 1.1} cy={170 + Math.sin(a) * r * 0.75} r={7} fill={rainbow ? chakra[i % 7] : `url(#${id}r)`} />;
+            return <circle key={i} cx={r2(200 + Math.cos(a) * r * 1.1)} cy={r2(170 + Math.sin(a) * r * 0.75)} r={7} fill={rainbow ? chakra[i % 7] : `url(#${id}r)`} />;
           })}
         </>
       )}

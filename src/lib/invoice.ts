@@ -41,11 +41,12 @@ export async function renderInvoice(number: string) {
   doc.text(`Invoice date: ${fmtDate(o.createdAt)}`, 320, doc.y + 8).text(`Payment: ${o.paymentMethod.toUpperCase()} (${o.paymentStatus})`, 320, doc.y + 2);
 
   y = Math.max(doc.y, 230) + 20;
-  const cols = [48, 230, 280, 320, 380, 440, 500];
+  // x and width of each column; the page body spans 48 → 547pt.
+  const cols: [number, number][] = [[48, 150], [200, 44], [246, 30], [278, 66], [346, 66], [414, 74], [490, 57]];
   const head = ["Item", "HSN", "Qty", "Rate", "Taxable", intra ? "CGST+SGST" : "IGST", "Amount"];
   doc.rect(48, y - 6, doc.page.width - 96, 22).fill("#f1ebf9");
   doc.fillColor(plum).font("Helvetica-Bold");
-  head.forEach((h, i) => doc.text(h, cols[i], y, { width: i === 0 ? 180 : 58, align: i === 0 ? "left" : "right" }));
+  head.forEach((h, i) => doc.text(h, cols[i][0], y, { width: cols[i][1], align: i === 0 ? "left" : "right" }));
   doc.fillColor("#2a2140").font("Helvetica");
   y += 24;
 
@@ -59,16 +60,20 @@ export async function renderInvoice(number: string) {
     const tax = gross - taxable;
     taxableSum += taxable;
     taxSum += tax;
-    const row = [i.name, i.hsnCode ?? "-", String(i.qty), rs(Number(i.unitPrice)), rs(taxable), `${rs(tax)} (${g}%)`, rs(gross)];
-    row.forEach((v, k) => doc.text(v, cols[k], y, { width: k === 0 ? 180 : k === 5 ? 70 : 58, align: k === 0 ? "left" : "right" }));
-    y = Math.max(doc.y, y + 14) + 6;
+    const row = [i.name, i.hsnCode ?? "-", String(i.qty), rs(Number(i.unitPrice)), rs(taxable), `${rs(tax)}\n@ ${g}%`, rs(gross)];
+    let bottom = y;
+    row.forEach((v, k) => {
+      doc.text(v, cols[k][0], y, { width: cols[k][1], align: k === 0 ? "left" : "right" });
+      bottom = Math.max(bottom, doc.y);
+    });
+    y = bottom + 8;
   }
 
   y += 8;
   doc.moveTo(300, y).lineTo(doc.page.width - 48, y).strokeColor("#d9cfe8").stroke();
   y += 10;
   const line = (label: string, value: string, bold = false) => {
-    doc.font(bold ? "Helvetica-Bold" : "Helvetica").text(label, 300, y, { width: 150 }).text(value, 450, y, { width: doc.page.width - 498, align: "right" });
+    doc.font(bold ? "Helvetica-Bold" : "Helvetica").text(label, 300, y, { width: 165 }).text(value, 465, y, { width: 82, align: "right" });
     y += 16;
   };
   line("Taxable value", rs(taxableSum));
@@ -76,11 +81,12 @@ export async function renderInvoice(number: string) {
     line("CGST", rs(taxSum / 2));
     line("SGST", rs(taxSum / 2));
   } else line("IGST", rs(taxSum));
-  if (Number(o.discount)) line(`Discount${o.couponCode ? ` (${o.couponCode})` : ""} (applied above)`, `- ${rs(Number(o.discount))}`);
+  if (Number(o.discount)) line(`Discount${o.couponCode ? ` (${o.couponCode})` : ""}*`, `- ${rs(Number(o.discount))}`);
   if (Number(o.shipping)) line("Shipping", rs(Number(o.shipping)));
   if (Number(o.codFee)) line("COD fee", rs(Number(o.codFee)));
   line("Total", rs(Number(o.total)), true);
 
+  if (Number(o.discount)) doc.fontSize(8).fillColor("#7a6f8a").text("* Discount is already reflected in the taxable value and GST above.", 300, y + 4, { width: 247 });
   doc.fontSize(8).fillColor("#7a6f8a").text("This is a computer-generated invoice. Prices are inclusive of GST.", 48, 760, { align: "center", width: doc.page.width - 96 });
   doc.end();
   return done;
