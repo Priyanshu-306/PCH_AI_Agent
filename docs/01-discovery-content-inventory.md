@@ -97,5 +97,38 @@ Proposed stack (open to change): Next.js + React Three Fiber / GSAP ScrollTrigge
 
 ---
 
-## 5. Open questions
-See the question list in the chat. Answers will be recorded here.
+## 5. Decisions (client answers, 2026-10-21)
+
+| # | Topic | Decision |
+|---|---|---|
+| 1 | Product data | Client sends a **spreadsheet**, using `templates/PCH_Import_Template.xlsx` |
+| 2 | Service prices | **Placeholders for now**, editable later in admin |
+| 3 | Extra services | Add **Past Life Regression** and **Prenatal / New-Mother Support** (6 services total) |
+| 4 | Courses | Course pages with an **enquiry form** (no online course payment) |
+| 5 | Trainers | **"Our Trainers"** section: Priyanka B. Chamoli, Sarika Bhatnagar, more added from admin |
+| 6 | Session booking | **Calendar slots + online payment** with email confirmation. Admin sets availability |
+| 7 | Payments | **Razorpay** (UPI, cards, netbanking), **Cash on Delivery** (shop), **WhatsApp order** (shop). No Stripe |
+| 8 | Shipping | **India only** |
+| 9 | Shop extras | Coupon codes, GST PDF invoices, customer accounts (orders, addresses, wishlist), product reviews (moderated) |
+| 10 | PCH → Crystal Hub | **Cinematic 3D crystal showcase** of featured products. Each links to its product on purecrystalhub.com, plus a "Visit Pure Crystal Hub" CTA |
+| 11 | Admin users | **Owner plus staff roles** (e.g. Shop Manager, Bookings Manager, Content Editor) |
+| 12 | Admin features | Business dashboard · activity/audit log (before/after) · analytics · content editor for both sites · **marketing spend tracking** · **add product** one at a time (with image and video upload) **or bulk Excel import** |
+| A | Marketing spend | **Manual entry + Excel upload**, with spend-vs-revenue (ROI) per channel and brand |
+| 13 | Alerts | **Email** (owner and customer) · **WhatsApp** (Business API provider needed, TBD) · **in-admin notifications** |
+| 14 | Branding | **Keep existing logos**, refresh colours and fonts (logo files still needed) |
+| 15 | Palette | **PCH:** lavender, warm sand, sage, gold. **Crystal Hub:** deep amethyst, crystal white, rose quartz |
+| 16 | 3D | **Full immersive 3D (WebGL) on both sites.** Adaptive quality plus `prefers-reduced-motion` fallback to keep phones usable |
+| 17 | Languages | **English + Hindi**, with a language switcher. Admin content fields in both |
+| 18 | Stack | **Next.js + Three.js (React Three Fiber) + GSAP/Lenis + Node API + PostgreSQL** (SQLite locally), Prisma |
+| 19 | Hosting | **VPS** (Hostinger/DigitalOcean): Docker Compose, Nginx, PM2/Node, Postgres, local media storage |
+| 20 | Git | Work on branch **`build/v1`** and open a PR into `master` |
+| B | Import template | Provided: `templates/PCH_Import_Template.xlsx` (Products, Services, Marketing Spend tabs) |
+
+### Still needed from client
+- Filled import template (products), plus photos and videos
+- Logo files (both brands, SVG/PNG preferred)
+- Phone/WhatsApp number, studio address, social handles
+- Testimonials (text, name, photo if allowed)
+- GSTIN and business address (for invoices)
+- Razorpay account (test keys are fine for local), WhatsApp Business API provider choice
+- Course dates and syllabus
