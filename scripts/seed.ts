@@ -149,6 +149,12 @@ const TESTIMONIALS = [
 async function main() {
   const demo = process.argv.includes("--demo");
 
+  // Container start-up passes --if-empty so edits and deletions made in the admin survive restarts.
+  if (process.argv.includes("--if-empty") && (await db.select({ n: sql<number>`count(*)::int` }).from(s.staff))[0].n > 0) {
+    console.log("Database already set up — skipping seed.");
+    return;
+  }
+
   // Staff
   const ownerEmail = process.env.SEED_OWNER_EMAIL ?? "owner@pch.local";
   const ownerPassword = process.env.SEED_OWNER_PASSWORD ?? "ChangeMe@123";

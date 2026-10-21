@@ -1,0 +1,60 @@
+# Local preview of Pure Conscious Healing + Pure Crystal Hub + Admin, alongside other Docker apps.
+#
+#   docker compose up -d --build     → first start: builds the app, creates the database, loads sample content
+#   http://localhost:3005             → Pure Conscious Healing
+#   http://shop.localhost:3005        → Pure Crystal Hub
+#   http://localhost:3005/admin       → Admin (owner@pch.local / ChangeMe@123)
+#
+# For the live server use deploy/compose.prod.yaml instead (requires real secrets in .env).
+name: pure-conscious-healing
+
+services:
+  db:
+    image: postgres:16.6
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pch
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pch-local}
+      POSTGRES_DB: pch
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # No published port: only the web container talks to it, so it never clashes with other apps.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pch -d pch"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3005}:3000"
+    environment:
+      DATABASE_URL: postgres://pch:${POSTGRES_PASSWORD:-pch-local}@db:5432/pch
+      MEDIA_DIR: /app/storage/uploads
+      HEALING_URL: http://localhost:${APP_PORT:-3005}
+      SHOP_URL: http://shop.localhost:${APP_PORT:-3005}
+      SHOP_HOSTS: shop.localhost
+      # Local preview only: a fixed signing key, the simulated Razorpay checkout, and cookies over plain http.
+      AUTH_SECRET: ${LOCAL_AUTH_SECRET:-local-preview-only-key-do-not-use-on-a-server}
+      ALLOW_TEST_PAYMENTS: "1"
+      ALLOW_INSECURE_COOKIES: "1"
+    # First start creates tables and loads sample + demo content; later starts keep your edits.
+    command: ["sh", "-c", "npx drizzle-kit migrate && npx tsx scripts/seed.ts --if-empty --demo && npx next start -p 3000"]
+    volumes:
+      - media:/app/storage/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/admin/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  pgdata:
+  media:

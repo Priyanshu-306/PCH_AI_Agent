@@ -13,7 +13,9 @@ export function siteForHost(hostHeader: string | null): Site {
   return "healing";
 }
 
-export const HEALING_URL = process.env.NEXT_PUBLIC_HEALING_URL ?? "http://localhost:3005";
-export const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? "http://shop.localhost:3005";
+// Read at runtime (not NEXT_PUBLIC_*, which Next.js bakes in at build time), so one Docker
+// image works on a laptop and on the live domains.
+export const HEALING_URL = process.env.HEALING_URL ?? "http://localhost:3005";
+export const SHOP_URL = process.env.SHOP_URL ?? "http://shop.localhost:3005";
 
 export const siteUrl = (site: Site, path = "/") => `${site === "shop" ? SHOP_URL : HEALING_URL}${path}`;

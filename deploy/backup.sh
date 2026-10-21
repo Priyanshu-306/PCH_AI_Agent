@@ -4,6 +4,6 @@ set -e
 STAMP=$(date +%F)
 DEST=${BACKUP_DIR:-$HOME/backups}
 mkdir -p "$DEST"
-docker compose exec -T db pg_dump -U pch pch | gzip > "$DEST/pch-db-$STAMP.sql.gz"
-docker compose cp app:/app/storage/uploads "$DEST/media-$STAMP"
+docker compose --env-file .env -f deploy/compose.prod.yaml exec -T db pg_dump -U pch pch | gzip > "$DEST/pch-db-$STAMP.sql.gz"
+docker compose --env-file .env -f deploy/compose.prod.yaml cp web:/app/storage/uploads "$DEST/media-$STAMP"
 find "$DEST" -mtime +30 -delete

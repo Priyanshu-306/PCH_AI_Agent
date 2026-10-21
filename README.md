@@ -14,6 +14,36 @@ All content is placeholder until the client's photos, videos, prices and product
 
 ## 1. Run it locally
 
+### Option A — Docker (easiest; runs alongside your other Docker apps)
+
+Requirements: Docker Desktop.
+
+```bash
+git clone https://github.com/Priyanshu-306/PCH_AI_Agent.git
+cd PCH_AI_Agent
+docker compose up -d --build
+```
+
+The first build takes a few minutes. When Docker Desktop shows **pure-conscious-healing** with `web` and `db` both green, open:
+
+- http://localhost:3005: Pure Conscious Healing
+- http://shop.localhost:3005: Pure Crystal Hub
+- http://localhost:3005/admin: Admin (`owner@pch.local` / `ChangeMe@123`)
+
+| Task | Command |
+|---|---|
+| Stop (keeps all data) | `docker compose stop` (or the ■ button in Docker Desktop) |
+| Start again | `docker compose start` |
+| Update after pulling new code | `git pull && docker compose up -d --build` |
+| See logs | `docker compose logs -f web` |
+| Use another port, e.g. 4000 | `APP_PORT=4000 docker compose up -d` (Windows PowerShell: `$env:APP_PORT=4000; docker compose up -d`) |
+
+The first start creates the database and loads the sample content and demo dashboard data. Later starts keep everything you change in the admin. Data lives in the Docker volumes `pure-conscious-healing_pgdata` and `pure-conscious-healing_media`. The database is not exposed outside Docker, so it can't clash with other projects.
+
+This preview uses the simulated Razorpay checkout and a local-only sign-in key. **Don't use `compose.yaml` on a live server**; see section 5.
+
+### Option B — Node.js directly (for editing code)
+
 Requirements: Node 22+, PostgreSQL 16.
 
 ```bash
@@ -27,16 +57,16 @@ npm run db:seed:demo            # optional: demo orders/bookings/visits so dashb
 npm run dev
 ```
 
-**No PostgreSQL installed?** Start one with Docker instead of the `CREATE USER` step above:
+**No PostgreSQL installed?** Start just a database with Docker instead of the `CREATE USER` step above:
 
 ```bash
-docker run --name pch-db -e POSTGRES_USER=pch -e POSTGRES_PASSWORD=pch -e POSTGRES_DB=pch -p 5432:5432 -d postgres:16
+docker run --name pch-db -e POSTGRES_USER=pch -e POSTGRES_PASSWORD=pch -e POSTGRES_DB=pch -p 5432:5432 -d postgres:16.6
 ```
 
 If port 5432 is already in use, use `-p 5433:5432` and change `DATABASE_URL` in `.env` to `…@localhost:5433/pch`.
 
 **Port:** the site runs on **3005**, so it doesn't clash with other apps on 3000. To use another port, for example 4000:
-1. In `.env`, set `NEXT_PUBLIC_HEALING_URL=http://localhost:4000` and `NEXT_PUBLIC_SHOP_URL=http://shop.localhost:4000`.
+1. In `.env`, set `HEALING_URL=http://localhost:4000` and `SHOP_URL=http://shop.localhost:4000`.
 2. Run `npx next dev -p 4000`.
 
 **Admin login:** `owner@pch.local` / `ChangeMe@123`. Change it in **Admin › Staff & roles**. A demo `shop@pch.local` account (Shop Manager role, same password) shows how roles restrict access.
@@ -119,14 +149,14 @@ Razorpay requires the policy pages to be live before it activates an account; th
 
 ```bash
 git clone … && cd PCH_AI_Agent
-cp .env.example .env          # set AUTH_SECRET, POSTGRES_PASSWORD, NEXT_PUBLIC_*_URL, hosts, keys
-docker compose up -d --build
-docker compose exec app npx tsx scripts/seed.ts     # first deploy only
+cp .env.example .env          # set AUTH_SECRET, POSTGRES_PASSWORD, HEALING_URL/SHOP_URL, hosts, keys
+docker compose --env-file .env -f deploy/compose.prod.yaml up -d --build
+docker compose --env-file .env -f deploy/compose.prod.yaml exec web npx tsx scripts/seed.ts --if-empty   # first deploy only
 sudo cp deploy/nginx.conf /etc/nginx/sites-available/pch && sudo ln -s ../sites-available/pch /etc/nginx/sites-enabled/
 sudo certbot --nginx -d pureconscioushealing.com -d www.pureconscioushealing.com -d purecrystalhub.com -d www.purecrystalhub.com
 ```
 
-Production `.env` values to change: `NEXT_PUBLIC_HEALING_URL=https://pureconscioushealing.com`, `NEXT_PUBLIC_SHOP_URL=https://purecrystalhub.com`, and `SHOP_HOSTS` and `HEALING_HOSTS` with the real domains.
+Production `.env` values to change: `HEALING_URL=https://pureconscioushealing.com`, `SHOP_URL=https://purecrystalhub.com`, and `SHOP_HOSTS` and `HEALING_HOSTS` with the real domains.
 
 The two sites can also be hosted separately: run the same build on two servers, each pointing its own domain at it, sharing one database.
 
