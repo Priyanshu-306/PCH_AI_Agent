@@ -13,7 +13,12 @@ const STAFF_COOKIE = "pch_staff";
 const CUSTOMER_COOKIE = "pch_customer";
 const MAX_AGE = 60 * 60 * 24 * 7;
 
-const key = () => new TextEncoder().encode(process.env.AUTH_SECRET || "dev-secret-change-me");
+function key() {
+  const secret = process.env.AUTH_SECRET;
+  if (process.env.NODE_ENV === "production" && (!secret || secret.length < 32 || secret.includes("change-me")))
+    throw new Error("AUTH_SECRET must be set to a random string of at least 32 characters in production");
+  return new TextEncoder().encode(secret || "dev-secret-change-me");
+}
 
 export const hashPassword = (pw: string) => bcrypt.hash(pw, 10);
 export const checkPassword = (pw: string, hash: string) => bcrypt.compare(pw, hash);

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { priceCart } from "@/lib/pricing";
+import { razorpayLive, testPaymentsAllowed } from "@/lib/payments";
 
 const Body = z.object({
   items: z.array(z.object({ productId: z.number().int(), qty: z.number().int().min(1).max(99) })),
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
     problems: q.problems,
     codAllowed: q.codAllowed,
     whatsappEnabled: q.shippingSettings.whatsappOrderEnabled,
+    onlineEnabled: razorpayLive() || testPaymentsAllowed(),
     freeAbove: q.shippingSettings.freeAbove,
   });
 }

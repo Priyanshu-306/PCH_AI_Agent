@@ -7,11 +7,15 @@ import crypto from "node:crypto";
  */
 export const razorpayLive = () => Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
 
+/** The simulated checkout is for development only unless explicitly enabled (e.g. a staging server). */
+export const testPaymentsAllowed = () => !razorpayLive() && (process.env.NODE_ENV !== "production" || process.env.ALLOW_TEST_PAYMENTS === "1");
+
 const secret = () => (razorpayLive() ? process.env.RAZORPAY_KEY_SECRET! : process.env.AUTH_SECRET || "dev-secret-change-me");
 
 export async function createPaymentOrder(amountRupees: number, receipt: string, notes: Record<string, string> = {}) {
   const amount = Math.round(amountRupees * 100);
   if (!razorpayLive()) {
+    if (!testPaymentsAllowed()) throw new Error("Online payments are not configured yet. Please choose another payment option.");
     return { id: `mock_order_${crypto.randomBytes(8).toString("hex")}`, amount, currency: "INR", keyId: "mock" };
   }
   const auth = Buffer.from(`${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`).toString("base64");
@@ -42,7 +46,7 @@ export function verifyWebhook(rawBody: string, signature: string | null) {
 
 /** Test-mode only: produce a payment id + signature the verify step will accept. */
 export function mockPay(orderId: string) {
-  if (razorpayLive() || !orderId.startsWith("mock_order_")) return null;
+  if (!testPaymentsAllowed() || !orderId.startsWith("mock_order_")) return null;
   const paymentId = `mock_pay_${crypto.randomBytes(8).toString("hex")}`;
   return { paymentId, signature: signPayment(orderId, paymentId) };
 }

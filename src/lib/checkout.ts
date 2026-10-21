@@ -4,7 +4,9 @@ import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { bookings, coupons, orderItems, orders, products, services } from "@/db/schema";
-import { createPaymentOrder, verifyPayment } from "./payments";
+import { createPaymentOrder, razorpayLive, testPaymentsAllowed, verifyPayment } from "./payments";
+
+const onlinePaymentsReady = () => razorpayLive() || testPaymentsAllowed();
 import { priceCart } from "./pricing";
 import { openSlots } from "./slots";
 import { emailLayout, escapeHtml, notifyOwner, sendEmail, sendWhatsApp } from "./notify";
@@ -40,6 +42,7 @@ export async function createBooking(input: z.infer<typeof BookingInput>) {
 
   const startsAt = istDate(input.day, input.time);
   const price = Number(svc.price ?? 0);
+  if (price > 0 && !onlinePaymentsReady()) return { error: "Online booking payments are not set up yet. Please contact us on WhatsApp to book." };
   const number = makeRef("PCH-B");
   const [booking] = await db
     .insert(bookings)
@@ -133,6 +136,7 @@ export async function createOrder(input: z.infer<typeof OrderInput>, customerId:
   if (input.coupon && quote.couponError) return { error: quote.couponError };
   if (input.method === "cod" && !quote.codAllowed) return { error: "Cash on delivery is not available for this order." };
   if (input.method === "whatsapp" && !quote.shippingSettings.whatsappOrderEnabled) return { error: "WhatsApp ordering is currently disabled." };
+  if (input.method === "razorpay" && !onlinePaymentsReady()) return { error: "Online payment is not available yet. Please choose cash on delivery or WhatsApp." };
 
   const number = makeRef("PCH");
   const order = await db.transaction(async (tx) => {

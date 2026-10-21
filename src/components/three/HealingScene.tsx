@@ -182,12 +182,14 @@ function Orb({ blend, q }: { blend: ReturnType<typeof useBlend>; q: Quality }) {
     const x = (narrow ? b.x * 0.3 : b.x) * viewport.width;
     const heroLift = narrow ? (sceneState.weights.hero ?? 0) * 0.27 : 0;
     const y = (b.y + heroLift) * viewport.height;
-    const s = b.s * Math.min(viewport.width, viewport.height) * (narrow ? 0.3 : 0.3);
+    const s = b.s * Math.min(viewport.width, viewport.height) * (narrow ? 0.27 : 0.3);
     const g = ref.current!;
     g.position.x = THREE.MathUtils.damp(g.position.x, x + sceneState.pointer.x * 0.15, 2.4, dt);
     g.position.y = THREE.MathUtils.damp(g.position.y, y + sceneState.pointer.y * 0.1, 2.4, dt);
     g.scale.setScalar(THREE.MathUtils.damp(g.scale.x, Math.max(s, 0.01), 2.4, dt));
-    opacity.current = THREE.MathUtils.damp(opacity.current, b.o, 3, dt);
+    // On narrow screens the orb sits behind text, so keep it faint outside the hero and closing sections.
+    const focus = narrow ? Math.max(sceneState.weights.hero ?? 0, sceneState.weights.cta ?? 0, 0.35) : 1;
+    opacity.current = THREE.MathUtils.damp(opacity.current, b.o * focus, 3, dt);
   });
   return (
     <group ref={ref}>

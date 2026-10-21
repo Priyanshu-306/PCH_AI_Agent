@@ -69,10 +69,11 @@ export default function CheckoutForm({ labels, coupon, prefill, saved }: { label
   }
 
   const methods = [
-    { id: "razorpay" as const, label: labels.payOnline, icon: CreditCard, show: true },
+    { id: "razorpay" as const, label: labels.payOnline, icon: CreditCard, show: q?.onlineEnabled ?? true },
     { id: "cod" as const, label: labels.cod, icon: Truck, show: q?.codAllowed ?? true },
     { id: "whatsapp" as const, label: labels.whatsapp, icon: MessageCircle, show: q?.whatsappEnabled ?? true },
   ].filter((m) => m.show);
+  if (q && methods.length && !methods.some((m) => m.id === method)) setTimeout(() => setMethod(methods[0].id), 0);
   const field = "field field-dark";
 
   return (

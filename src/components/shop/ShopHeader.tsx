@@ -38,9 +38,9 @@ export default function ShopHeader({ lang, logo, announcement, categories, label
         </div>
       )}
       <div className={`transition-all duration-500 ${scrolled || open ? "glass-dark !bg-night-900/95 py-2" : "py-4"}`}>
-        <div className="container-x flex items-center justify-between gap-4">
+        <div className="container-x flex items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-2">
-            <button className="grid size-11 place-items-center rounded-full text-crystal lg:hidden" onClick={() => setOpen((o) => !o)} aria-label="Menu" aria-expanded={open}>
+            <button className="-ml-2 grid size-10 place-items-center rounded-full text-crystal lg:hidden" onClick={() => setOpen((o) => !o)} aria-label="Menu" aria-expanded={open}>
               {open ? <X /> : <Menu />}
             </button>
             <Link href="/" className="flex items-center gap-2.5" aria-label="Pure Crystal Hub — home">
@@ -48,10 +48,10 @@ export default function ShopHeader({ lang, logo, announcement, categories, label
                 <img src={logo} alt="Pure Crystal Hub" className="h-10 w-auto" />
               ) : (
                 <>
-                  <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-amethyst-400 to-rose-300 text-night-900 shadow-[0_0_30px_-6px_#a983e6]">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-gradient-to-br sm:size-9 from-amethyst-400 to-rose-300 text-night-900 shadow-[0_0_30px_-6px_#a983e6]">
                     <Gem className="size-4" />
                   </span>
-                  <span className="font-carved text-xl tracking-wider whitespace-nowrap text-crystal">Pure Crystal Hub</span>
+                  <span className="font-carved text-lg tracking-wider whitespace-nowrap text-crystal sm:text-xl">Pure Crystal Hub</span>
                 </>
               )}
             </Link>
@@ -64,11 +64,11 @@ export default function ShopHeader({ lang, logo, announcement, categories, label
             <a href={healingUrl} className="rounded-full px-3 py-2 text-sm whitespace-nowrap text-gold-300 hover:text-gold-400">{labels.backToHealing}</a>
           </nav>
           <div className="flex items-center gap-0.5">
-            <LangToggle lang={lang} label={labels.language} className="hidden text-crystal hover:bg-white/10 sm:inline-flex" />
-            <Link href="/products?focus=search" className="grid size-11 place-items-center rounded-full text-crystal hover:bg-white/10" aria-label="Search"><Search className="size-5" /></Link>
+            <span className="hidden sm:block"><LangToggle lang={lang} label={labels.language} className="text-crystal hover:bg-white/10" /></span>
+            <Link href="/products?focus=search" className="grid size-10 place-items-center rounded-full text-crystal hover:bg-white/10 sm:size-11" aria-label="Search"><Search className="size-5" /></Link>
             <Link href="/wishlist" className="hidden size-11 place-items-center rounded-full text-crystal hover:bg-white/10 sm:grid" aria-label={labels.wishlist}><Heart className="size-5" /></Link>
-            <Link href="/account" className="grid size-11 place-items-center rounded-full text-crystal hover:bg-white/10" aria-label={labels.account}><UserRound className="size-5" /></Link>
-            <Link href="/cart" className="relative grid size-11 place-items-center rounded-full text-crystal hover:bg-white/10" aria-label={`${labels.cart} (${count})`}>
+            <Link href="/account" className="grid size-10 place-items-center rounded-full text-crystal hover:bg-white/10 sm:size-11" aria-label={labels.account}><UserRound className="size-5" /></Link>
+            <Link href="/cart" className="relative grid size-10 place-items-center rounded-full text-crystal hover:bg-white/10 sm:size-11" aria-label={`${labels.cart} (${count})`}>
               <ShoppingBag className="size-5" />
               {count > 0 && <span className="absolute top-1 right-1 grid min-w-5 place-items-center rounded-full bg-gold-400 px-1 text-[0.65rem] font-bold text-night-900">{count}</span>}
             </Link>

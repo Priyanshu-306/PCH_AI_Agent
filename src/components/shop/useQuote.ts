@@ -16,6 +16,7 @@ export type Quote = {
   problems: string[];
   codAllowed: boolean;
   whatsappEnabled: boolean;
+  onlineEnabled: boolean;
   freeAbove: number;
 };
 

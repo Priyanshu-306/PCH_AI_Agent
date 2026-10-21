@@ -47,7 +47,7 @@ export default async function ShopHome() {
       <section className="relative isolate min-h-[100svh] overflow-hidden">
         <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_70%_40%,#3a2468_0%,#160d27_55%,#0e0819_100%)]" />
         <div aria-hidden className="absolute inset-0 -z-10 opacity-60 [background:radial-gradient(circle_at_20%_80%,rgba(242,198,212,.18),transparent_40%)]" />
-        <div className="absolute inset-0 top-[38%] -z-10 sm:top-0 sm:left-[42%]">
+        <div className="absolute inset-0 top-[48%] -z-10 sm:top-0 sm:left-[42%]">
           <ShopHero3D colors={heroColors} />
         </div>
         <div className="container-x flex min-h-[100svh] items-start pt-32 sm:items-center sm:pt-0">
