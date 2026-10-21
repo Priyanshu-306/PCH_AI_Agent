@@ -1,0 +1,37 @@
+# VPS deployment: Postgres + the app. Put Nginx (deploy/nginx.conf) in front for HTTPS.
+#   cp .env.example .env   # fill in secrets
+#   docker compose up -d --build
+#   docker compose exec app npx tsx scripts/seed.ts   # first run only
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pch
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: pch
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pch"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://pch:${POSTGRES_PASSWORD:-change-me}@db:5432/pch
+      MEDIA_DIR: /app/storage/uploads
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - media:/app/storage/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  media:

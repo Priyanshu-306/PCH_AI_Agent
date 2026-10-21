@@ -266,3 +266,9 @@ html.lenis body {
     transform: none;
   }
 }
+
+/* Wide letter-spacing breaks Devanagari conjuncts; keep it tight in Hindi. */
+html[data-lang="hi"] .eyebrow,
+html[data-lang="hi"] [class*="tracking-["] {
+  letter-spacing: 0.02em;
+}
