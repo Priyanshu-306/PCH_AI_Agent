@@ -1,0 +1,36 @@
+export const SETTING_DEFAULTS = {
+  contact: {
+    phone: "+91 00000 00000",
+    whatsapp: "910000000000",
+    email: "pureconscioushealing@gmail.com",
+    address: "Studio address — to be updated, Lucknow, Uttar Pradesh",
+    hours: "Mon – Sat: 10:00 am – 7:00 pm",
+    instagram: "",
+    facebook: "",
+    youtube: "",
+    mapEmbedUrl: "",
+  },
+  shipping: {
+    flatRate: 79,
+    freeAbove: 999,
+    codEnabled: true,
+    codFee: 49,
+    codMaxOrder: 10000,
+    whatsappOrderEnabled: true,
+    dispatchDays: "Dispatched in 1–2 working days. Delivery in 3–7 days across India.",
+  },
+  business: {
+    legalName: "Pure Conscious Healing",
+    gstin: "",
+    state: "Uttar Pradesh",
+    address: "Registered address — to be updated",
+    invoicePrefix: "PCH",
+  },
+  booking: {
+    slotStepMinutes: 30,
+    minLeadHours: 12,
+    maxDaysAhead: 45,
+    holdMinutes: 20,
+    onlineNote: "Online sessions are held on Google Meet / Zoom. The link is emailed after confirmation.",
+  },
+} as const;
